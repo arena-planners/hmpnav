@@ -1,0 +1,54 @@
+# HMPNav (fluentrobotics/HMPNav) MPPI with the constant-velocity human motion predictor.
+# Native unicycle output [v, omega]; the laser scan feeds the static-obstacle cost.
+action_type: differential_drive
+sensor_needs: [laserscan]
+rate_hz: 10
+controls_orientation: false
+
+depends:
+  global_plan: true
+
+observations:
+  aliases:
+    robot_pose: robot_pose_from_tf
+    goal_pose: subgoal_from_plan
+
+  datasources:
+    robot_pose_from_tf:
+      type: RobotPoseTFGenerator
+      params: {}
+
+    laser_scan:
+      type: sensor_msgs/LaserScan
+      params:
+        sensor: laserscan
+
+    robot_state:
+      type: nav_msgs/Odometry
+      params:
+        topic: odom
+
+    pedestrians:
+      type: arena_people_msgs/Pedestrians
+      params:
+        topic: arena_peds
+
+    goal_pose:
+      type: geometry_msgs/PoseStamped
+      params:
+        topic: goal_pose
+
+    global_plan:
+      type: nav_msgs/Path
+      params:
+        topic: plan
+
+    costmap:
+      type: nav_msgs/OccupancyGrid
+      params:
+        topic: global_costmap/costmap
+
+    subgoal_from_plan:
+      type: SubgoalGenerator
+      params:
+        lookahead: 2.0
